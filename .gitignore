@@ -54,6 +54,21 @@ project.fragment.lock.json
 artifacts/
 **/Properties/launchSettings.json
 
+# .NET 8
+*.runtimeconfig.json
+*.deps.json
+*.dll
+*.exe
+*.pdb
+*.log
+*.cache
+*.config
+*.props
+*.targets
+*.csproj.user
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+
 # StyleCop
 StyleCopReport.xml
 
