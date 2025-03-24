@@ -18,12 +18,10 @@ public static class HostingExtensions
                 options.JsonSerializerOptions.WriteIndented = true;
             });
 
-        builder.ConfigureAuth();
-
         return builder;
     }
 
-    private static WebApplicationBuilder ConfigureAuth(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder ConfigureAuth(this WebApplicationBuilder builder)
     {
         builder.Services.AddAuthorization(options =>
         {

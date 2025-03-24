@@ -10,15 +10,8 @@ namespace WebHooksClient.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PasswordResetController : ControllerBase
+public class PasswordResetController(ILogger<PasswordResetController> logger) : ControllerBase
 {
-    private readonly ILogger<PasswordResetController> _logger;
-
-    public PasswordResetController(ILogger<PasswordResetController> logger)
-    {
-        _logger = logger;
-    }
-
     [Authorize("webhook")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -27,7 +20,7 @@ public class PasswordResetController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Processing password reset for email: {Email}", dto.Email);
+            logger.LogInformation("Processing password reset for email: {Email}", dto.Email);
             
             // Process password reset asynchronously
             await Task.Delay(100, cancellationToken); // Simulating async work, replace with actual implementation
@@ -36,7 +29,7 @@ public class PasswordResetController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process password reset for {Email}", dto.Email);
+            logger.LogError(ex, "Failed to process password reset for {Email}", dto.Email);
             return Problem(
                 title: "Password Reset Failed",
                 detail: "An error occurred while processing your password reset request",

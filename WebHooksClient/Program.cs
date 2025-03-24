@@ -2,7 +2,8 @@ using WebHooksClient.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.ConfigureServices();
+builder.ConfigureServices()
+    .ConfigureAuth();
 
 var app = builder.Build();
 
