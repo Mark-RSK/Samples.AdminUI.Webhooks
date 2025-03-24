@@ -1,7 +1,18 @@
-﻿﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure custom logging
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+    logging.AddJsonConsole(options =>
+    {
+        options.IncludeScopes = true;
+        options.TimestampFormat = "HH:mm:ss ";
+        options.UseUtcTimestamp = true;
+    });
+});
 
 // Add services to the container
 builder.Services.AddControllers()
