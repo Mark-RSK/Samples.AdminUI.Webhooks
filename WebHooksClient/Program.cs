@@ -1,24 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace WebHooksClient
-{
-    public class Program
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
     {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("webhook", builder =>
+    {
+        builder.AddAuthenticationSchemes("Bearer");
+        builder.RequireScope("admin_ui_webhooks");
+    });
+});
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = "http://localhost:5003";
+        options.RequireHttpsMetadata = false;
+        options.Audience = "admin_ui_webhooks";
+    });
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+// Configure middleware pipeline
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers()
+    .RequireAuthorization(); // Require authentication by default
+
+// Add global exception handler
+app.UseExceptionHandler("/error");
+
+app.Run();
