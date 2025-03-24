@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿﻿﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace WebHooksClient.Controllers;
+
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
 
 [Route("api/[controller]")]
 [ApiController]
@@ -19,38 +23,34 @@ public class PasswordResetController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<PasswordResetResponse>> PasswordReset([FromBody] PasswordResetDTO dto)
+    public async Task<ActionResult<PasswordResetResponse>> ResetPassword([FromBody] PasswordResetDTO dto, CancellationToken cancellationToken)
     {
         try
         {
             _logger.LogInformation("Processing password reset for email: {Email}", dto.Email);
             
             // Process password reset asynchronously
-            await Task.Delay(100); // Simulating async work, replace with actual implementation
+            await Task.Delay(100, cancellationToken); // Simulating async work, replace with actual implementation
 
-            return Ok(new PasswordResetResponse { Success = true });
+            return Ok(new PasswordResetResponse(Success: true));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing password reset");
-            return BadRequest(new PasswordResetResponse 
-            { 
-                Success = false, 
-                Error = "Failed to process password reset" 
-            });
+            _logger.LogError(ex, "Failed to process password reset for {Email}", dto.Email);
+            return Problem(
+                title: "Password Reset Failed",
+                detail: "An error occurred while processing your password reset request",
+                statusCode: StatusCodes.Status500InternalServerError
+            );
         }
     }
 }
 
-public class PasswordResetDTO
-{
+public sealed record PasswordResetDTO(
     [Required]
     [EmailAddress]
-    public string Email { get; set; } = string.Empty;
-}
+    string Email);
 
-public class PasswordResetResponse
-{
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-}
+public sealed record PasswordResetResponse(
+    bool Success,
+    string? Error = null);
