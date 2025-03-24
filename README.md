@@ -8,8 +8,13 @@ The AdminUI Webhooks sample provides a reference implementation for handling pas
 
 ## Sample Projects
 
-### WebHooksClient
-- .NET 8 Web API implementing the Password Reset webhook endpoint
+### WebHooksClient (IdentityServer4)
+- .NET 8 Web API implementing the Password Reset webhook endpoint using IdentityServer4
+- Demonstrates secure webhook handling with JWT authentication
+- Includes proper error handling and logging
+
+### WebHooksClient (Duende)
+- .NET 8 Web API implementing the Password Reset webhook endpoint using Duende IdentityServer
 - Demonstrates secure webhook handling with JWT authentication
 - Includes proper error handling and logging
 
