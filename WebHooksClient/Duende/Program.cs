@@ -1,4 +1,4 @@
-using WebHooksClient.Extensions;
+using DuendeWebHooksClient.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

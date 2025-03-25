@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
+using IdentityModel;
 
-namespace WebHooksClient.Extensions;
+namespace DuendeWebHooksClient.Extensions;
 
 public static class HostingExtensions
 {
@@ -23,14 +23,12 @@ public static class HostingExtensions
 
     public static WebApplicationBuilder ConfigureAuth(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthorization(options =>
-        {
-            options.AddPolicy("webhook", builder =>
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy("webhook", builder =>
             {
                 builder.AddAuthenticationSchemes("Bearer");
-                builder.RequireClaim("admin_ui_webhooks");
+                builder.RequireClaim(JwtClaimTypes.Scope, "admin_ui_webhooks");
             });
-        });
 
         builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
@@ -58,7 +56,7 @@ public static class HostingExtensions
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         app.MapControllers()
             .RequireAuthorization();
 
